@@ -1,29 +1,29 @@
 import React, { useState } from "react";
 import dayjs from "dayjs";
 import "dayjs/locale";
-import { BsCalendar2Plus, BsChevronLeft, BsChevronRight } from "react-icons/bs";
+import { BsCalendar2Plus, BsChevronLeft, BsChevronRight, BsX } from "react-icons/bs";
 
 dayjs.locale("en");
 
-interface Event {
+interface CalendarEvent {
     date: string;
     title: string;
 }
 
 interface CalendarProps {
-    events: Event[];
+    events: CalendarEvent[];
 }
 
-// interface StreakCalendarProps {
-//   events: { date: string; title: string }[];
-// }
-
-export const Calendar = () => {
+export const Calendar: React.FC<CalendarProps> = ({ events }) => {
     const [currentMonth, setCurrentMonth] = useState(dayjs());
+    const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs | null>(null);
     const daysInMonth = currentMonth.daysInMonth();
     const firstDayOfMonth = currentMonth.startOf("month").day();
     const days = [];
-    //   let streakCount = 0;
+
+    const getEventsForDate = (date: dayjs.Dayjs) => {
+        return events.filter((event) => dayjs(event.date).isSame(date, "day"));
+    }
 
     for (let i = 0; i < firstDayOfMonth; i++) {
         days.push(<div key={`empty-${i}`} className="text-center"></div>);
@@ -32,39 +32,31 @@ export const Calendar = () => {
     for (let i = 1; i <= daysInMonth; i++) {
         const date = currentMonth.date(i);
         const isToday = date.isSame(dayjs(), "day");
-        // const eventForDay =
-        //   events && Array.isArray(events)
-        //     ? events.find((event) => dayjs(event.date).isSame(date, "day"))
-        //     : undefined;
-
-        // if (eventForDay) {
-        //   streakCount++;
-        // } else {
-        //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        //   streakCount = 0;
-        // }
+        const eventForDay = getEventsForDate(date);
 
         days.push(
             <div
                 key={date.format("YYYY-MM-DD")}
                 className={`text-center my-auto text-lg font-medium p-1 
-                                                 ${isToday
+                            ${isToday
                         ? "bg-white rounded-md text-blue-600"
                         : "text-slate-900 hover:text-white"
                     }`}
+                onClick={() => setSelectedDate(date)}
             >
                 {i}
-                {/* {eventForDay && <div>{eventForDay.title}</div>} */}
+                {eventForDay && (
+                    <div className="text-xs mt-1 bg-blue-200 rounded p-1">
+                        {eventForDay.length}
+                    </div>
+                )}
             </div>
         );
     }
 
     const Days = (props: { children: React.ReactNode }) => {
         return (
-            <div
-                className="text-center font-medium text-xl
-                         text-blue-900"
-            >
+            <div className="text-center font-medium text-xl text-blue-900">
                 {props.children}
             </div>
         );
@@ -72,10 +64,7 @@ export const Calendar = () => {
 
     const Sunday = (props: { children: React.ReactNode }) => {
         return (
-            <div
-                className="text-center font-medium text-xl
-                         text-red-600"
-            >
+            <div className="text-center font-medium text-xl text-red-600">
                 {props.children}
             </div>
         );
@@ -108,6 +97,29 @@ export const Calendar = () => {
             <Days>Fri</Days>
             <Days>Sat</Days>
             {days}
+            {selectedDate && (
+                <div className="absolute top-0 left-0 w-full h-full bg-slate-900 
+                                bg-opacity-50 flex items-center justify-center">
+                    <div className="bg-white p-4 rounded-md w-64">
+                        <div className="flex justify-between items-center mb-2">
+                            <h3 className="text-lg font-bold">
+                                {selectedDate.format("MMMM D, YYYY")}
+                            </h3>
+                            <button onClick={() => setSelectedDate(null)}>
+                                <BsX className="text-2xl" />
+                            </button>
+                        </div>
+                        <ul className="list-disc pl-5">
+                            {getEventsForDate(selectedDate).map((event, index) => (
+                                <li key={index}>{event.title}</li>
+                            ))}
+                        </ul>
+                        {getEventsForDate(selectedDate).length === 0 && (
+                            <p>No events for this day</p>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
