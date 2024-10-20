@@ -1,18 +1,10 @@
 import React, { useState } from 'react';
 import { BsPlus } from 'react-icons/bs';
 import dayjs from 'dayjs';
-
-interface CalendarEvent {
-    id: string;
-    date: string;
-    title: string;
-    description: string;
-    type: string;
-    tags: string[];
-}
+import { ICalendarEvent } from '../../types/event_types'
 
 interface ActionPaneProps {
-    onAddEvent: (event: Omit<CalendarEvent, 'id'>) => void;
+    onAddEvent: (event: Omit<ICalendarEvent, '_id'>) => void;
     eventTypes: string[];
     onAddEventType: (newType: string) => void;
 }
@@ -29,7 +21,11 @@ const ActionPane: React.FC<ActionPaneProps> = ({ onAddEvent, eventTypes, onAddEv
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (title && date) {
-            onAddEvent({ title, date, description, type, tags: tags.split(',').map(tag => tag.trim()) });
+            onAddEvent({ title, 
+                        date: new Date(date) , 
+                        description, 
+                        type, 
+                        tags: tags.split(',').map(tag => tag.trim()) });
             setTitle('');
             setDate(dayjs().format('YYYY-MM-DD'));
             setDescription('');

@@ -2,22 +2,14 @@ import React, { useState } from "react";
 import dayjs from "dayjs";
 import "dayjs/locale";
 import { BsCalendar2Plus, BsChevronLeft, BsChevronRight, BsX, BsTrash, BsPencil } from "react-icons/bs";
+import { ICalendarEvent } from "../../types/event_types";
 
 dayjs.locale("en");
 
-interface CalendarEvent {
-    id: string;
-    date: string;
-    title: string;
-    description: string;
-    type: string;
-    tags: string[];
-}
-
 interface CalendarProps {
-    events: CalendarEvent[];
+    events: ICalendarEvent[];
     onDeleteEvent: (id: string) => void;
-    onEditEvent: (editedEvent: CalendarEvent) => void;
+    onEditEvent: (editedEvent: ICalendarEvent) => void;
 }
 
 export const Calendar: React.FC<CalendarProps> = ({ events, onDeleteEvent, onEditEvent }) => {
@@ -34,7 +26,7 @@ export const Calendar: React.FC<CalendarProps> = ({ events, onDeleteEvent, onEdi
         'Entertainment': 'bg-gradient-to-bl from-yellow-200 to-transparent',
     }
 
-    const handleEditEvent = (event: CalendarEvent) => {
+    const handleEditEvent = (event: ICalendarEvent) => {
         const newTitle = prompt("Enter new title", event.title);
         if (newTitle !== null) {
             const editedEvent = { ...event, title: newTitle };
@@ -152,7 +144,7 @@ export const Calendar: React.FC<CalendarProps> = ({ events, onDeleteEvent, onEdi
                         </div>
                         <ul className="list-none pl-0">
                             {getEventsForDate(selectedDate).map((event) => (
-                                <li key={event.id} className={`${eventTypeColors[event.type] ||
+                                <li key={event._id} className={`${eventTypeColors[event.type] ||
                                     'bg-gradient-to-br from-slate-300 to-transparent'} 
                                                                 mb-4 p-2 border rounded`}>
                                     <div className="flex justify-between items-start">
@@ -160,7 +152,7 @@ export const Calendar: React.FC<CalendarProps> = ({ events, onDeleteEvent, onEdi
                                         <button onClick={() => handleEditEvent(event)} className="text-blue-800">
                                             <BsPencil />
                                         </button>
-                                        <button onClick={() => onDeleteEvent(event.id)} className="text-red-500">
+                                        <button onClick={() => onDeleteEvent(event._id)} className="text-red-500">
                                             <BsTrash />
                                         </button>
                                     </div>

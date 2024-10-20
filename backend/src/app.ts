@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import connectDB from './config/db'
-import eventRoutes from './routes/events'
+import eventRoutes from './routes/event_rts'
 
 const app = express();
 

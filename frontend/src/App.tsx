@@ -1,52 +1,65 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Calendar from './components/calendar/calendar';
 import ActionPane from './components/action_pane/action_pane';
 import dayjs from 'dayjs';
-
-interface CalendarEvent {
-  id: string;  // Add an id field
-  date: string;
-  title: string;
-  description: string;
-  type: string;
-  tags: string[];
-}
+import { ICalendarEvent } from './types/event_types';
+import { getEvents, createEvent, updateEvent, deleteEvent } from './api/event_api';
 
 function App() {
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [events, setEvents] = useState<ICalendarEvent[]>([]);
   const [eventTypes, setEventTypes] = useState<string[]>(['News', 'Business', 'Sports', 'Entertainment'])
 
-  const handleAddEvent = (newEvent: Omit<CalendarEvent, 'id'>) => {
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const fetchedEvents = await getEvents();
+      setEvents(fetchedEvents);
+    } catch (error) {
+      console.error('Failed to fetch events:', error);
+    }
+  };
+
+  const handleAddEvent = async (newEvent: Omit<ICalendarEvent, '_id'>) => {
     const today = dayjs().startOf('day');
     const eventDate = dayjs(newEvent.date);
 
     try {
       if (eventDate.isBefore(today)) {
-      alert("Cannot add events for past dates.");
-      return;
-    }
-
-    const eventWithId = { ...newEvent, id: Date.now().toString() };
-    setEvents([...events, eventWithId]);
-    } catch (error) {
-      if (error instanceof Error)
-      {
-        alert(error.message);
-      } else {
-        alert("An unexpected error occured")
+        alert("Cannot add events for past dates.");
+        return;
       }
-      
+
+      const createdEvent = await createEvent(newEvent);
+      setEvents([...events, createdEvent]);
+    } catch (error) {
+      console.error('Failed to add event:', error);
+      alert("An unexpected error occurred");
     }
   };
 
-  const handleEditEvent = (editedEvent: CalendarEvent) => {
-    setEvents(events.map(event =>
-      event.id === editedEvent.id ? editedEvent : event
-    ))
-  }
+  const handleEditEvent = async (editedEvent: ICalendarEvent) => {
+    try {
+      const updatedEvent = await updateEvent(editedEvent);
+      setEvents(prevEvents => prevEvents.map(event =>
+        event._id === updatedEvent._id ? updatedEvent : event
+      ));
+    } catch (error) {
+      console.error('Failed to update event:', error);
+      alert("An unexpected error occurred");
+    }
+  };
 
-  const handleDeleteEvent = (id: string) => {
-    setEvents(events.filter(event => event.id !== id));
+  const handleDeleteEvent = async (id: string) => {
+    try {
+      await deleteEvent(id);
+      setEvents(prevEvents => prevEvents.filter(event => event._id !== id));
+    } catch (error) {
+      console.error('Failed to delete event:', error);
+      alert("An unexpected error occurred");
+    }
   };
 
   const handleAddEventType = (newType: string) => {
