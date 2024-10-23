@@ -9,9 +9,13 @@ export interface ICalendarEvent extends Document {
 }
 
 const CalendarEventSchema: Schema = new Schema({
+    user: { type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+     },
     title: {type: String, required: true},
     date: {type: Date, required: true},
-    description: {type: String, required: true},
+    description: {type: String, required: false},
     type: {type: String, required: true},
     tags: [{type: String}]
 })

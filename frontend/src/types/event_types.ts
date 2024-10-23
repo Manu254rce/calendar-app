@@ -4,5 +4,7 @@ export interface ICalendarEvent {
   date: Date;
   description: string;
   type: string;
+  // location: Location;
+  // members: string[];
   tags: string[];
 }

@@ -1,12 +1,14 @@
 import express, { Request, Response, NextFunction, RequestHandler } from 'express';
 import { getEvents, createEvent, updateEvent, deleteEvent } from '../controllers/event_ctrl';
+import { authMiddleWare } from '../middleware/auth_middleware';
 
 const router = express.Router();
 
-// Helper function to wrap async route handlers
 const asyncHandler = (fn: RequestHandler) => (req: Request, res: Response, next: NextFunction) => {
     return Promise.resolve(fn(req, res, next)).catch(next);
 };
+
+router.use(authMiddleWare)
 
 // Get all events 
 router.get('/', asyncHandler(getEvents));

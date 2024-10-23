@@ -1,18 +1,24 @@
 import { Request, Response, NextFunction } from "express";
 import CalendarEvent, { ICalendarEvent } from "../models/event_mdls";
 
-export const getEvents = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+interface AuthRequest extends Request {
+  user?: { userId: string } 
+}
+
+export const getEvents = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const events = await CalendarEvent.find();
+        const events = await CalendarEvent.find({ user: req.user?.userId });
         res.json(events);
     } catch (error) {
         next(error);
     }
 };
 
-export const createEvent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const createEvent = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const newEvent: ICalendarEvent = new CalendarEvent(req.body);
+        const newEvent: ICalendarEvent = new CalendarEvent({
+          ...req.body, user: req.user?.userId
+        });
         await newEvent.save();
         res.status(201).json(newEvent);
     } catch (error) {
@@ -20,9 +26,12 @@ export const createEvent = async (req: Request, res: Response, next: NextFunctio
     }
 };
 
-export const updateEvent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const updateEvent = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const updatedEvent = await CalendarEvent.findByIdAndUpdate(req.params.id, req.body, { new: true });
+      const updatedEvent = await CalendarEvent.findByIdAndUpdate(
+        { _id: req.params.id, user: req.user?.userId },
+        req.body,
+        { new: true });
       if (!updatedEvent) {
         res.status(404).json({ message: 'Event not found' });
         return;
@@ -33,9 +42,12 @@ export const updateEvent = async (req: Request, res: Response, next: NextFunctio
     }
 };
 
-export const deleteEvent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const deleteEvent = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const deletedEvent = await CalendarEvent.findByIdAndDelete(req.params.id);
+    const deletedEvent = await CalendarEvent.findByIdAndDelete(
+         {_id: req.params.id,
+          user: req.user?.userId}
+    );
     if (!deletedEvent) {
       res.status(404).json({ message: 'Event not found' });
       return;
