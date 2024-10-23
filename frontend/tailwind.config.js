@@ -1,9 +1,16 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: ["./src/**/*.{html,js,jsx,ts,tsx}"],
-  theme: {
-    extend: {},
+export const mode = 'jit';
+export const content = ["./src/**/*.{html,js,jsx,ts,tsx}"];
+export const darkMode = 'class';
+export const theme = {
+  extend: {
+    fontFamily: {
+      'garamond': 'EB Garamond',
+      'dancing-script': 'Dancing Script',
+      'kavivanar': 'Kavivanar',
+      'pacifico': 'Pacifico',
+    }
   },
-  plugins: [],
-}
+};
+export const plugins = [];
 
