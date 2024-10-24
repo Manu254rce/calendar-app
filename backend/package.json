@@ -13,6 +13,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/mongoose": "^5.11.96",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
