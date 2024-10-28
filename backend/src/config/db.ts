@@ -13,4 +13,6 @@ const connectDB = async () => {
     }
 }
 
+setInterval(connectDB, 30000);
+
 export default connectDB;

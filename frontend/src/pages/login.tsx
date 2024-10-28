@@ -27,9 +27,16 @@ const Login: React.FC = () => {
         setIsLoading(true);
         try {
             const { token, user } = await login(user_name, password);
-            authLogin(token, user);
+            authLogin(token, {
+                id: user.id,
+                email: user.email,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                user_name: user_name
+            });
             navigate('/home');
         } catch (error) {
+            console.error('Login error:', error);
             setError('Invalid credentials')
         } finally {
             setIsLoading(false);

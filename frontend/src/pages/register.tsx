@@ -39,7 +39,13 @@ const Register: React.FC = () => {
             }
             const { token, user } = await register(userData);
 
-            authLogin(token, user);
+            authLogin(token, {
+                id: user.id,
+                email: user.email,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                user_name: user.user_name
+            });
             navigate('/home')
         } catch (error) {
             setError('Invalid credentials')
