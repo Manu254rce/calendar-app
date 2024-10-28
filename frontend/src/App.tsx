@@ -4,12 +4,13 @@ import Home from './pages/home';
 import Login from './pages/login';
 import React from 'react';
 import Register from './pages/register';
+import LandingPage from './pages/landingPage';
 
-function ProtectedRoute({ children }: { children: React.ReactNode}) {
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace/>;
+    return <Navigate to="/login" replace />;
   }
 
   return <>{children}</>
@@ -18,17 +19,18 @@ function ProtectedRoute({ children }: { children: React.ReactNode}) {
 function App() {
   return (
     <AuthProvider>
-    <Router>
-      <Routes>
-        <Route path="/home" element={
-          <ProtectedRoute>
-            <Home />
+      <Router>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/home" element={
+            <ProtectedRoute>
+              <Home />
             </ProtectedRoute>
           } />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
-    </Router>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </Router>
     </AuthProvider>
   );
 }
