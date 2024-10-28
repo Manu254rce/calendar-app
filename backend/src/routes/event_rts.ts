@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction, RequestHandler } from 'express';
-import { getEvents, createEvent, updateEvent, deleteEvent } from '../controllers/event_ctrl';
+import { getEvents, createEvent, updateEvent, deleteEvent, searchEvents, getTagSuggestions } from '../controllers/event_ctrl';
 import { authMiddleWare } from '../middleware/auth_middleware';
 
 const router = express.Router();
@@ -21,5 +21,11 @@ router.put('/:id', asyncHandler(updateEvent));
 
 // Delete an event
 router.delete('/:id', asyncHandler(deleteEvent));
+
+// Search events
+router.get('/search', asyncHandler(searchEvents));
+
+// Get tag suggestions
+router.get('/tags', asyncHandler(getTagSuggestions));
 
 export default router;
