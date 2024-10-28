@@ -7,6 +7,7 @@ import { ICalendarEvent } from '../types/event_types';
 import { getEvents, createEvent, updateEvent, deleteEvent } from '../api/event_api';
 import animationData from '../loaders/CalendarWebLoader.json';
 import lottie from 'lottie-web';
+import ExpansionPane from './components/expansionPane/expansion_pane';
 
 export function WebLoader() {
   const animBox = useRef(null);
@@ -106,7 +107,7 @@ export default function Home() {
   }
 
   return (
-    <main className='w-screen h-screen p-1 grid grid-cols-12 gap-1 bg-gradient-to-br from-blue-300 to-fuchsia-400'>
+    <main className='w-screen h-screen grid grid-cols-12 gap-2 bg-gradient-to-br from-blue-300 to-fuchsia-400'>
       {isLoading && <WebLoader />}
       <ActionPane 
         onToggleSideBar={handleToggleSideBar}
@@ -129,6 +130,7 @@ export default function Home() {
           eventTypes={eventTypes}
         />
       )}
+      <ExpansionPane/>
     </main>
   );
 }

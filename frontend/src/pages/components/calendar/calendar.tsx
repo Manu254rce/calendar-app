@@ -99,7 +99,7 @@ export const Calendar: React.FC<CalendarProps> = (
 
         return (
             <>
-                <section className="bg-blue-900 p-2 col-span-7 rounded-md flex flex-row items-center justify-center">
+                <section className="bg-blue-900 p-3 h-1/2 col-span-7 rounded-md flex flex-row items-center justify-center">
                     <button
                         onClick={() => setCurrentMonth(currentMonth.subtract(1, "month"))}
                     >
@@ -112,7 +112,7 @@ export const Calendar: React.FC<CalendarProps> = (
                         <BsChevronRight className="m-auto text-5xl text-white col-span-1" />
                     </button>
                 </section>
-                <div className="col-span-7 grid grid-cols-7 gap-5">
+                <div className="col-span-7 h-full grid grid-cols-7 gap-6">
                     <Sunday>Sun</Sunday>
                     <Days>Mon</Days>
                     <Days>Tue</Days>
@@ -147,20 +147,20 @@ export const Calendar: React.FC<CalendarProps> = (
 
         return (
             <>
-                <section className="bg-blue-900 p-2 col-span-7 rounded-md flex flex-row items-center justify-center">
+                <section className="bg-blue-900 h-1/2 p-1 col-span-7 rounded-md flex flex-row items-center justify-center">
                     <button
                         onClick={() => setCurrentMonth(currentMonth.subtract(1, "week"))}
                     >
                         <BsChevronLeft className="mx-auto text-5xl text-white" />
                     </button>
-                    <div className="col-span-4 m-auto text-white text-3xl font-garamond">
+                    <div className="col-span-4 m-auto text-white text-4xl font-garamond">
                         {currentMonth.format(calendarView === 'month' ? "MMMM YYYY" : "MMMM D, YYYY")}
                     </div>
                     <button onClick={() => setCurrentMonth(currentMonth.add(1, "week"))}>
                         <BsChevronRight className="m-auto text-5xl text-white col-span-1" />
                     </button>
                 </section>
-                <div className="col-span-7 grid grid-cols-7 gap-1 h-3/4">
+                <div className="col-span-7 grid grid-cols-7 gap-1 h-full">
                     {weekDays}
                 </div>
             </>
@@ -172,8 +172,8 @@ export const Calendar: React.FC<CalendarProps> = (
         const eventsForDay = getEventsForDate(currentMonth);
 
         return (
-            <div className="col-span-7 p-4 flex-flex-row">
-                <div className="flex flex-row items-center space-x-8">
+            <div className="col-span-7 flex-flex-row">
+                <div className="p-4 flex flex-row items-center rounded space-x-8 bg-gradient-to-br from-white-900 to-transparent">
                     <button
                         onClick={() => setCurrentMonth(currentMonth.subtract(1, "day"))}
                         className=""
@@ -229,7 +229,7 @@ export const Calendar: React.FC<CalendarProps> = (
     };
 
     return (
-        <div className="bg-gradient-to-tl from-white via to-slate-200/30 col-span-11 border-1 border-white drop-shadow-lg
+        <div className="bg-gradient-to-tl from-white via to-slate-200/30 col-span-8 border-1 border-white drop-shadow-lg
                         grid grid-cols-7 gap-5 w-full h-full mx-auto rounded-md p-3 relative">
             {calendarView === 'month' && renderMonthView()}
             {calendarView === 'week' && renderWeekView()}
@@ -260,6 +260,15 @@ export const Calendar: React.FC<CalendarProps> = (
                                     </div>
                                     <p className="text-sm text-gray-600">{event.type}</p>
                                     <p className="mt-1">{event.description}</p>
+                                    {event.members && event.members.length > 0 && (
+                                        <p className="mt-1">Members: {event.members.join(', ')}</p>
+                                    )}
+                                    {event.location && event.location.name && (
+                                        <p className="mt-1">Location: {event.location.name}</p>
+                                    )}
+                                    {event.location && event.location.address && (
+                                        <p className="mt-1">Address: {event.location.address}</p>
+                                    )}
                                     <div className="mt-2">
                                         {event.tags.map((tag, index) => (
                                             <span key={index} className="inline-block bg-blue-100 text-blue-800
