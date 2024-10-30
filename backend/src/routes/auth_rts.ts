@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction, RequestHandler } from 'express'
-import { register, login } from '../controllers/auth_ctrl'
+import { register, login, logout } from '../controllers/auth_ctrl'
 
 const router = express.Router();
 
@@ -18,5 +18,6 @@ const asyncHandler = (fn: (req: Request, res: Response) => Promise<any>) => {
 
 router.post('/register', asyncHandler(register));
 router.post('/login', asyncHandler(login));
+router.post('/logout', logout)
 
 export default router;

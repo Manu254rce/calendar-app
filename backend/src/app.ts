@@ -3,20 +3,30 @@ import cors from 'cors'
 import connectDB from './config/db'
 import eventRoutes from './routes/event_rts'
 import userRoutes from './routes/user_rts'
-import authRoutes  from './routes/auth_rts'
+import authRoutes from './routes/auth_rts'
 
+export function startApp() {
+    const app = express();
 
-const app = express();
+    connectDB();
 
-connectDB();
+    app.use(cors())
+    app.use(express.json());
 
-app.use(cors())
-app.use(express.json())
+    app.get('/', (req, res) => {
+        res.send('Backend server is running');
+    });
 
-app.use('/api/events', eventRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/auth', authRoutes);
+    app.use('/api/events', eventRoutes);
+    app.use('/api/users', userRoutes);
+    app.use('/api/auth', authRoutes);
 
-const PORT = process.env.PORT || 5000;
+    const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+        .on('error', (error) => {
+            console.error('Error starting server:', error);
+        });
+}
+
+startApp();
