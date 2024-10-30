@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import dayjs from "dayjs";
 import "dayjs/locale";
 import { BsChevronLeft, BsChevronRight, BsX, BsTrash, BsPencilFill } from "react-icons/bs";
 import { ICalendarEvent } from "../../../types/event_types";
+import { User } from "../../../types/user_types";
+import api from '../../../api/axios_config';
+import axios from "axios";
 
 dayjs.locale("en");
 
@@ -24,9 +27,8 @@ export const Calendar: React.FC<CalendarProps> = (
         setCurrentMonth,
         calendarView }) => {
     const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs | null>(null);
-
-
-
+    const [userDetails, setUserDetails] =  useState<Record<string, User>>({});
+    const [isLoadingUsers, setIsLoadingUsers] = useState(false);
 
     const eventTypeColors: Record<string, string> = {
         'News': 'bg-gradient-to-bl from-red-200 to-transparent border-r-8 border-r-red-800',
@@ -35,6 +37,48 @@ export const Calendar: React.FC<CalendarProps> = (
         'Entertainment': 'bg-gradient-to-bl from-yellow-200 to-transparent border-r-8 border-r-yellow-600',
     }
 
+    const fetchUserDetails = useCallback(async (userIds: string[]) => {
+        if (!userIds.length || userIds.length === 0) return;
+
+        const validUserIds = userIds.filter(id => id && id.trim() !== '');
+
+        if (validUserIds.length === 0) return;
+
+        try {
+            console.log('Fetching user details for IDs: ', validUserIds);
+
+            const response = await api.get('/users/details', {
+                params: { userIds: validUserIds.join(',') }
+            });
+
+            console.log('User details response:', response.data);
+
+            setUserDetails(prev => ({
+                ...prev,
+                ...response.data
+            }));
+        } catch (error) {
+            console.error('Failed to fetch user details:', error);
+            if (axios.isAxiosError(error)) {
+                console.error('Error response: ', error.response?.data)
+            }
+        } finally {
+            setIsLoadingUsers(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        const memberIds = events
+            .flatMap(event => event.members || [])
+            .filter((id): id is string => Boolean(id) && typeof id === 'string');
+
+        console.log('Member IDs to fetch:', memberIds);
+
+        if (memberIds.length > 0) {
+            fetchUserDetails(memberIds);
+        }
+    }, [events, fetchUserDetails])
+    
     const handleEditEvent = (event: ICalendarEvent) => {
         const newTitle = prompt("Enter new title", event.title);
         if (newTitle !== null) {
@@ -261,7 +305,16 @@ export const Calendar: React.FC<CalendarProps> = (
                                     <p className="text-sm text-gray-600">{event.type}</p>
                                     <p className="mt-1">{event.description}</p>
                                     {event.members && event.members.length > 0 && (
-                                        <p className="mt-1">Members: {event.members.join(', ')}</p>
+                                        <p className="mt-1">
+                                            <span className="font-semibold">Members:</span> {' '}
+                                            {isLoadingUsers ? (
+                                                <span className="text-gray-500">Loading Members...</span>
+                                            ) : (
+                                                event.members.map(memberId => 
+                                                    userDetails[memberId]?.user_name || 'Unknown User'
+                                                ).join(', ')
+                                            )}
+                                        </p>
                                     )}
                                     {event.location && event.location.name && (
                                         <p className="mt-1">Location: {event.location.name}</p>

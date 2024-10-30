@@ -10,13 +10,15 @@ interface EventModalProps {
   onAddEvent: (event: Omit<ICalendarEvent, '_id'>) => void;
   eventTypes: string[];
   onAddEventType: (newType: string) => void;
+  isCreating: boolean;
 }
 
 const EventModal: React.FC<EventModalProps> = ({
   onClose,
   onAddEvent,
   eventTypes,
-  onAddEventType
+  onAddEventType,
+  isCreating
 }) => {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
@@ -36,12 +38,13 @@ const EventModal: React.FC<EventModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (title && date) {
+      console.log('Members to be added:', members)
       onAddEvent({
         title,
         date: new Date(date),
         description,
         type,
-        members: members.map((m) => m.id),
+        members: members.map((m) => m.id || m.id),
         location: { name: locationName, address: locationAddress, },
         tags: tags.split(',').map(tag => tag.trim())
       });
@@ -135,11 +138,11 @@ const EventModal: React.FC<EventModalProps> = ({
           </div>
           <div>
             <label htmlFor="members" className="block mb-1">Members</label>
-            <MemberAutocomplete onMemberSelect={handleAddMember} />
+            <MemberAutocomplete onMemberSelect={handleAddMember} selectedMembers={members}/>
             {members.length > 0 && (
               <ul>
                 {members.map((member) => (
-                  <li key={member.id} className='bg-white px-4 rounded flex items-center mb-2 py-3'>
+                  <li key={member.id || member.id} className='bg-white px-4 rounded flex items-center mb-2 py-3'>
                     <h1 className='text-black grow font-bold italic'>{member.user_name}</h1>
                     <BsX
                       className="ml-2 text-red-500 text-2xl cursor-pointer"
@@ -179,8 +182,10 @@ const EventModal: React.FC<EventModalProps> = ({
               className="w-full p-2 rounded text-black"
             />
           </div>
-          <button type="submit" className="bg-slate-900 text-white px-4 py-2 rounded font-bold text-lg">
-            Add Event
+          <button type="submit" 
+                  className="bg-slate-900 text-white px-4 py-2 rounded font-bold text-lg"
+                  disabled={isCreating}>
+            {isCreating ? 'Adding Event...' : 'Add Event'}
           </button>
         </form>
       </div>

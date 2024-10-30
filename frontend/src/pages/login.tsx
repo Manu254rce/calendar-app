@@ -54,6 +54,7 @@ const Login: React.FC = () => {
                             User Name
                         </label>
                         <input
+                            data-testid="username-input"
                             type="text"
                             id="user_name"
                             value={user_name}
@@ -68,6 +69,7 @@ const Login: React.FC = () => {
                             Password
                         </label>
                         <input
+                            data-testid="password-input"
                             type="password"
                             id="password"
                             value={password}
@@ -78,6 +80,7 @@ const Login: React.FC = () => {
                     </div>
                     {error && <p className="bg-white p-3 font-bold text-red-600 text-sm">{error}</p>}
                     <button
+                        data-testid="login-button"
                         type="submit"
                         className="w-1/3 flex justify-center py-2 px-4 mx-auto rounded-md
                         bg-blue-900 hover:bg-slate-900 hover-animation border border-transparent shadow-sm text-sm text-white">

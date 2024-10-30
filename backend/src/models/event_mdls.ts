@@ -29,7 +29,7 @@ const CalendarEventSchema: Schema = new Schema({
     type: { type: String, required: true },
     members: [{ type: String }],
     location: {
-        name: { type: String, required: true },
+        name: { type: String, required: false },
         address: { type: String },
         coordinates: {
             latitude: { type: Number },

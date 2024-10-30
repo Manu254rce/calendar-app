@@ -55,7 +55,7 @@ const ExpansionPane = () => {
   )
 }
 
-const WelcomeUser: React.FC<WelcomeUserProps> = ({ user }) => {
+const WelcomeUser: React.FC<WelcomeUserProps> = React.memo(({ user }) => {
   console.log('Weocome User props: ', user);
   if (!user) {
     return (
@@ -74,7 +74,7 @@ const WelcomeUser: React.FC<WelcomeUserProps> = ({ user }) => {
       </p>
     </div>
   )
-}
+})
 
 const SearchBar: React.FC<SearchBarProps> = ({ events, setFilteredEvents }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -105,7 +105,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ events, setFilteredEvents }) => {
       setIsLoading(false);
     }
   }, []);
-  
+
   const handleSearch = useCallback(async (query: string) => {
     setSearchQuery(query);
 

@@ -6,11 +6,13 @@ import { User } from '../../../types/user_types';
 interface MemberAutocompleteProps {
     onMemberSelect: (member: User) => void;
     placeholder?: string;
+    selectedMembers: User[];
 }
 
 const MemberAutocomplete: React.FC<MemberAutocompleteProps> = ({
     onMemberSelect,
-    placeholder = "Search for a member"
+    placeholder = "Search for a member",
+    selectedMembers
 }) => {
     const [inputValue, setInputValue] = useState('');
     const [suggestions, setSuggestions] = useState<User[]>([]);
@@ -36,13 +38,24 @@ const MemberAutocomplete: React.FC<MemberAutocompleteProps> = ({
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+
+
     const fetchUsers = useCallback(async (query: string) => {
         setIsLoading(true);
         setError(null);
-
+        
+        const filterSuggestions = (users: User[]) => {
+            return users.filter(user =>
+                !selectedMembers.some(selectedMember =>
+                    selectedMember.id === user.id || selectedMember._id === user._id
+                )
+            );
+        };
+        
         try {
             const response = await api.get(`/users/search?query=${query}`);
-            setSuggestions(response.data);
+            const filteredSuggestions = filterSuggestions(response.data);
+            setSuggestions(filteredSuggestions);
             setShowDropdown(true);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -51,7 +64,7 @@ const MemberAutocomplete: React.FC<MemberAutocompleteProps> = ({
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [selectedMembers]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -67,10 +80,16 @@ const MemberAutocomplete: React.FC<MemberAutocompleteProps> = ({
     }, [inputValue, fetchUsers]);
 
     const handleSelect = (user: User) => {
-        onMemberSelect(user);
-        setInputValue('');
-        setShowDropdown(false);
-        setSuggestions([]);
+        const isAlreadySelected = selectedMembers.some(
+            selectedMember => selectedMember.id === user.id || selectedMember._id === user._id
+        );
+
+        if (!isAlreadySelected) {
+            onMemberSelect(user);
+            setInputValue('');
+            setShowDropdown(false);
+            setSuggestions([]);
+        }
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

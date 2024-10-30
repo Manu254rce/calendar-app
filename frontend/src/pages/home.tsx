@@ -39,6 +39,7 @@ export default function Home() {
   const [eventTypes, setEventTypes] = useState<string[]>(['News', 'Business', 'Sports', 'Entertainment'])
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCreatingEvent, setIsCreatingEvent] = useState(false);
 
   useEffect(() => {
     fetchEvents();
@@ -66,11 +67,15 @@ export default function Home() {
         return;
       }
 
+      setIsCreatingEvent(true);
       const createdEvent = await createEvent(newEvent);
       setEvents([...events, createdEvent]);
+      setIsOpen(false);
     } catch (error) {
       console.error('Failed to add event:', error);
       alert("An unexpected error occurred");
+    } finally {
+      setIsCreatingEvent(false);
     }
   };
 
@@ -128,6 +133,7 @@ export default function Home() {
           onAddEvent={handleAddEvent}
           onAddEventType={handleAddEventType}
           eventTypes={eventTypes}
+          isCreating={isCreatingEvent}
         />
       )}
       <ExpansionPane/>
