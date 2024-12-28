@@ -4,6 +4,8 @@ import connectDB from './config/db'
 import eventRoutes from './routes/event_rts'
 import userRoutes from './routes/user_rts'
 import authRoutes from './routes/auth_rts'
+import adminRoutes from './routes/admin_rts'
+import commentRoutes from './routes/comment_rts'
 
 export function startApp() {
     const app = express();
@@ -20,6 +22,8 @@ export function startApp() {
     app.use('/api/events', eventRoutes);
     app.use('/api/users', userRoutes);
     app.use('/api/auth', authRoutes);
+    app.use('/api', commentRoutes);
+    app.use('/api/admin', adminRoutes);
 
     const PORT = process.env.PORT || 5000;
 
