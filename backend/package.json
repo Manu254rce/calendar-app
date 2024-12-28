@@ -21,8 +21,10 @@
     "express": "^4.21.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.7.1",
+    "node-mailjet": "^6.0.6",
     "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0"
+    "passport-google-oauth20": "^2.0.0",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@testing-library/cypress": "^10.0.2",
