@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@headlessui/react": "^2.2.0",
     "@react-oauth/google": "^0.12.1",
     "@types/node": "^16.18.113",
     "@types/react": "^18.3.11",

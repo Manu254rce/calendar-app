@@ -41,10 +41,15 @@ const Register: React.FC = () => {
 
             authLogin(token, {
                 id: user.id,
+                _id: user._id,
                 email: user.email,
                 first_name: user.first_name,
                 last_name: user.last_name,
-                user_name: user.user_name
+                user_name: user.user_name,
+                password: user.password,
+                preferences: user.preferences,
+                isAdmin: user.isAdmin,
+                user_role: user.user_role
             });
             navigate('/home')
         } catch (error) {
@@ -55,9 +60,9 @@ const Register: React.FC = () => {
     }
 
     return (
-        <main className="w-screen h-screen flex flex-col items-center justify-center">
-            <div className="flex flex-col justify-evenly items-center w-1/3 h-4/5 rounded-md space-y-2 
-            bg-gradient-to-br from-blue-900 to-fuchsia-700 shadow-md">
+        <main className="w-screen min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col justify-evenly items-center w-full max-w-md h-4/5 rounded-md space-y-2 
+            bg-gradient-to-br from-blue-900 to-fuchsia-700 shadow-md p-6 sm:p-8">
                 <h1 className="text-2xl text-white font-medium">Register</h1>
                 <form onSubmit={handleSubmit} className="flex flex-col space-y-4 w-2/3 h-2/3 overflow-y-scroll no-scrollbar">
                     <div>
@@ -127,7 +132,7 @@ const Register: React.FC = () => {
                             required
                         />
                     </div>
-                    {error && <p className=" bg-white p-3 font-bold text-red-600 text-sm">{error}</p>}
+                    {error && <p className=" bg-red-300 p-3 font-bold text-red-600 text-sm rounded-md">{error}</p>}
                     <button
                         type="submit"
                         className="w-1/3 flex justify-center py-2 px-4 mx-auto rounded-md
@@ -137,9 +142,8 @@ const Register: React.FC = () => {
 
                 </form>
                 <div className="flex flex-row items-center">
-                    <h3 className="text-white text-md text-left">Back to</h3>
-                    <Link to="/login" className="text-white text-md text-right font-bold hover:text-blue-900 
-                                hover-animation"> Login</Link>
+                    <h3 className="text-white text-md text-left">Back to <Link to="/login" className="text-white text-md text-right font-bold hover:text-blue-900 
+                                hover-animation">Login</Link></h3> 
                 </div>
             </div>
             {isLoading && <WebLoader />}

@@ -1,10 +1,9 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import CalendarEvent, { ICalendarEvent } from "../models/event_mdls";
 import mongoose from "mongoose";
-
-interface AuthRequest extends Request {
-  user?: { userId: string }
-}
+import { sendEmail } from '../services/mailService';
+import UserModel from '../models/user_mdls';
+import { AuthRequest } from "types/user_types";
 
 export const getEvents = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -119,3 +118,55 @@ export const getTagSuggestions = async (req: AuthRequest, res: Response, next: N
     next(error);
   }
 }
+
+export const addUserToEvent = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  const { eventId, userId } = req.body;
+
+  try {
+      const event = await CalendarEvent.findById(eventId);
+
+      if (!event) {
+          res.status(404).json({ message: 'Event not found' });
+          return;
+      }
+
+      // Check if the user is already a member
+      if (event.members.includes(userId)) {
+          res.status(400).json({ message: 'User  is already a member of this event' });
+          return
+        }
+
+      // Add the user to the event's members
+      event.members.push(userId);
+      await event.save();
+
+      // Fetch user details for User B (the one being added)
+      const userB = await UserModel.findById(userId);
+
+      if (!userB) {
+          res.status(404).json({ message: 'User  not found' });
+          return
+        }
+
+      // Send notification email to User B
+      try {
+        await sendEmail(
+          userB.email,
+          'You have been added to an event!',
+          `You have been added to the event: ${event.title}`,
+          `<h1>${event.title}</h1><p>You have been added to this event.</p>`
+        );
+      } catch (emailError) {
+        console.error('Email Sending Failed:', emailError);
+      
+        res.status(200).json({ 
+          message: 'User added to event, but email notification failed' 
+        });
+      }
+  
+      res.status(200).json({ message: 'User  added to event and notified via email' });
+  } catch (error) {
+      console.error('Error adding user to event:', error);
+      next(error);
+  }
+};

@@ -8,6 +8,11 @@ export interface IUser extends Document {
     first_name: string;
     last_name: string;
     user_name: string;
+    user_role: string;
+    preferences?: {
+        theme?: string;
+    };
+    isAdmin?: boolean;
     comparePassword(candidatePassword: string) : Promise<boolean>;
 }
 
@@ -42,6 +47,23 @@ const userSchema: Schema = new Schema({
         type: String,
         required: true,
         trim: true
+    },
+
+    user_role: {
+        type: String,
+        trim: true
+    },
+
+    preferences : {
+        theme: {
+            type: String,
+            default: 'light'
+        }
+    },
+
+    isAdmin: {
+        type: Boolean,
+        default: false
     }
 }, {timestamps: true});
 
