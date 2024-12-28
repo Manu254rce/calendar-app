@@ -16,3 +16,12 @@ export interface ICalendarEvent {
   }
   tags: string[];
 }
+
+export interface IComment {
+  _id?: string;
+  userId: string;
+  userName: string;
+  text: string;
+  createdAt: Date;
+  eventId: string;
+}
