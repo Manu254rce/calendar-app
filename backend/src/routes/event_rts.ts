@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction, RequestHandler } from 'express';
-import { getEvents, createEvent, updateEvent, deleteEvent, searchEvents, getTagSuggestions } from '../controllers/event_ctrl';
+import { getEvents, createEvent, updateEvent, deleteEvent, searchEvents, getTagSuggestions, addUserToEvent } from '../controllers/event_ctrl';
 import { authMiddleWare } from '../middleware/auth_middleware';
 
 const router = express.Router();
@@ -27,5 +27,7 @@ router.get('/search', asyncHandler(searchEvents));
 
 // Get tag suggestions
 router.get('/tags', asyncHandler(getTagSuggestions));
+
+router.post('/add-user', asyncHandler(addUserToEvent));
 
 export default router;
