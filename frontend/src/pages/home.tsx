@@ -3,11 +3,12 @@ import Calendar from './components/calendar/calendar';
 import ActionPane from './components/action_pane/action_pane';
 import EventModal from './components/newEvent_modal/newEvent_modal';
 import dayjs from 'dayjs';
-import { ICalendarEvent } from '../types/event_types';
+import { ICalendarEvent, IComment } from '../types/event_types';
 import { getEvents, createEvent, updateEvent, deleteEvent } from '../api/event_api';
 import animationData from '../loaders/CalendarWebLoader.json';
 import lottie from 'lottie-web';
 import ExpansionPane from './components/expansionPane/expansion_pane';
+import { useNavigate } from 'react-router-dom';
 
 export function WebLoader() {
   const animBox = useRef(null);
@@ -112,31 +113,35 @@ export default function Home() {
   }
 
   return (
-    <main className='w-screen h-screen grid grid-cols-12 gap-2 bg-gradient-to-br from-blue-300 to-fuchsia-400'>
+    <main className='min-w-screen h-screen bg-gradient-to-br from-blue-300 to-fuchsia-400 flex flex-row overflow-y-scroll 
+                                          no-scrollbar dark:bg-gradient-to-br dark:from-blue-900 dark:to-fuchsia-900'>
       {isLoading && <WebLoader />}
-      <ActionPane 
+      <ActionPane
         onToggleSideBar={handleToggleSideBar}
         setCurrentMonth={setCurrentMonth}
         setCalendarView={setCalendarView}
       />
-      <Calendar 
-        events={events}
-        onDeleteEvent={handleDeleteEvent}
-        onEditEvent={handleEditEvent}
-        currentMonth={currentMonth}
-        setCurrentMonth={setCurrentMonth}
-        calendarView={calendarView}
-      />
-      {isOpen && (
-        <EventModal
-          onClose={handleToggleSideBar}
-          onAddEvent={handleAddEvent}
-          onAddEventType={handleAddEventType}
-          eventTypes={eventTypes}
-          isCreating={isCreatingEvent}
+      <section className="absolute top-0 right-0 p-1 flex flex-col md:flex-row h-full w-full md:w-11/12">
+        <Calendar
+          events={events}
+          onDeleteEvent={handleDeleteEvent}
+          onEditEvent={handleEditEvent}
+          currentMonth={currentMonth}
+          setCurrentMonth={setCurrentMonth}
+          calendarView={calendarView}
         />
-      )}
-      <ExpansionPane/>
+        {isOpen && (
+          <EventModal
+            onClose={handleToggleSideBar}
+            onAddEvent={handleAddEvent}
+            onAddEventType={handleAddEventType}
+            eventTypes={eventTypes}
+          // isCreating={isCreatingEvent}
+          />
+        )}
+        <ExpansionPane />
+      </section>
+
     </main>
   );
 }
