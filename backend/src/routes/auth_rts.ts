@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction, RequestHandler } from 'express'
+import express, { Request, Response } from 'express'
 import { register, login, logout } from '../controllers/auth_ctrl'
 
 const router = express.Router();

@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET || '1251591768200a3b1715a224ba2fc601b5
 
 export const register = async (req: Request, res: Response) => {
     try {
-        const { email, password, first_name, last_name, user_name } = req.body
+        const { email, password, first_name, last_name, user_name, isAdmin } = req.body
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -15,10 +15,10 @@ export const register = async (req: Request, res: Response) => {
                 : 'Username already taken' })
         }
 
-        const user = new User({ email, password, first_name, last_name, user_name })
+        const user = new User({ email, password, first_name, last_name, user_name, isAdmin })
         await user.save()
 
-        const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '24h' })
+        const token = jwt.sign({ id: user._id.toString(), email: user.email, isAdmin: user.isAdmin }, JWT_SECRET, { expiresIn: '24h' })
 
         res.status(201).json({
             token, user: {
@@ -26,7 +26,8 @@ export const register = async (req: Request, res: Response) => {
                 email: user.email,
                 first_name: user.first_name,
                 last_name: user.last_name,
-                user_name: user.user_name
+                user_name: user.user_name,
+                isAdmin: user.isAdmin
             }
         })
     } catch (error) {
@@ -44,15 +45,15 @@ export const login = async (req: Request, res: Response) => {
 
         const user = await User.findOne({ user_name });
         if (!user) {
-            return res.status(401).json({ message: 'Invalid credentials' })
+            return res.status(401).json({ message: 'Invalid username' })
         }
 
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
-            return res.status(401).json({ message: 'Invalid credentials' })
+            return res.status(401).json({ message: 'Invalid password' })
         }
 
-        const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '24h' })
+        const token = jwt.sign({ userId: user._id, isAdmin: user.isAdmin }, JWT_SECRET, { expiresIn: '24h' })
 
         res.json({
             token, user: {
@@ -60,7 +61,8 @@ export const login = async (req: Request, res: Response) => {
                 email: user.email,
                 first_name: user.first_name,
                 last_name: user.last_name,
-                user_name: user.user_name
+                user_name: user.user_name,
+                isAdmin: user.isAdmin
             }
         })
     } catch (error) {
@@ -70,6 +72,10 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const logout = async (req: Request, res: Response) => {
-    res.status(200).json({message: 'Logged out successfully'});
+    try {
+        res.status(200).json({message: 'Logged out successfully'});
+    } catch (error) {
+        res.status(500).json({ message: 'Error during logout' });
+    }
 }
 

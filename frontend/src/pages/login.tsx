@@ -29,10 +29,15 @@ const Login: React.FC = () => {
             const { token, user } = await login(user_name, password);
             authLogin(token, {
                 id: user.id,
+                _id: user._id,
                 email: user.email,
                 first_name: user.first_name,
                 last_name: user.last_name,
-                user_name: user_name
+                user_name: user.user_name,
+                password: user.password,
+                preferences: user.preferences,
+                isAdmin: user.isAdmin,
+                user_role: user.user_role
             });
             navigate('/home');
         } catch (error) {
@@ -44,9 +49,10 @@ const Login: React.FC = () => {
     }
 
     return (
-        <main className="w-screen h-screen flex flex-col items-center justify-center">
-            <div className="flex flex-col justify-center items-center w-1/3 h-2/3 rounded-md space-y-2 
-                            bg-gradient-to-br from-blue-900 to-fuchsia-700 shadow-md">
+        <main className="w-screen min-h-screen flex flex-col items-center justify-center 
+                                                px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col justify-center items-center w-full max-w-md min-h-3/4 rounded-md space-y-2 
+                            bg-gradient-to-br from-blue-900 to-fuchsia-700 shadow-md p-6 sm:p-8">
                 <h1 className="text-2xl text-white font-medium">Login</h1>
                 <form onSubmit={handleSubmit} className="flex flex-col space-y-4 w-2/3 h-1/2">
                     <div>
@@ -78,7 +84,7 @@ const Login: React.FC = () => {
                             required
                         />
                     </div>
-                    {error && <p className="bg-white p-3 font-bold text-red-600 text-sm">{error}</p>}
+                    {error && <p className="bg-red-200 p-3 font-bold text-red-600 text-sm rounded-md">{error}</p>}
                     <button
                         data-testid="login-button"
                         type="submit"
@@ -86,12 +92,10 @@ const Login: React.FC = () => {
                         bg-blue-900 hover:bg-slate-900 hover-animation border border-transparent shadow-sm text-sm text-white">
                         Login
                     </button>
-
                 </form>
                 <div className="flex flex-row items-center">
-                    <h3 className="text-white text-md text-left">Don't have an account? </h3>
-                    <Link to="/register" className="text-white text-md text-right font-bold hover:text-blue-900 
-                                hover-animation">. Register</Link>
+                    <h3 className="text-white text-md text-left">Don't have an account? <Link to="/register" className="text-white text-md text-right font-bold hover:text-blue-900 
+                                hover-animation"> Register</Link></h3>
                 </div>
             </div>
             {isLoading && <WebLoader />}
