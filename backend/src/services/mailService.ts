@@ -9,13 +9,13 @@ const logger = winston.createLogger({
   ),
   transports: [
     new winston.transports.Console(),
-    new winston.transports.File({ filename: ' email-errors.log' })
+    new winston.transports.File({ filename: 'email-errors.log' })
   ]
 });
 
 const mailjet = new Mailjet({
-  apiKey: process.env.MAILJET_API_KEY || '4f913698cab6ec702c9f0f69e9f48b84',
-  apiSecret: process.env.MAILJET_SECRET_KEY || '07821e2665c0a041b3a346475ea11bcc'
+  apiKey: process.env.MAILJET_API_KEY!,
+  apiSecret: process.env.MAILJET_SECRET_KEY!
 });
 
 console.log('Mailjet configured with API Key:', process.env.MAILJET_API_KEY);
