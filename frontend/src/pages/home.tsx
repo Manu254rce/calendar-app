@@ -113,15 +113,14 @@ export default function Home() {
   }
 
   return (
-    <main className='min-w-screen h-screen bg-gradient-to-br from-blue-300 to-fuchsia-400 flex flex-row overflow-y-scroll 
-                                          no-scrollbar dark:bg-gradient-to-br dark:from-blue-900 dark:to-fuchsia-900'>
+    <main className='min-w-screen h-screen bg-gradient-to-br from-blue-300 to-fuchsia-400 flex flex-row  dark:bg-gradient-to-br dark:from-blue-900 dark:to-fuchsia-900'>
       {isLoading && <WebLoader />}
       <ActionPane
         onToggleSideBar={handleToggleSideBar}
         setCurrentMonth={setCurrentMonth}
         setCalendarView={setCalendarView}
       />
-      <section className="absolute top-0 right-0 p-1 flex flex-col md:flex-row h-full w-full md:w-11/12">
+      <section className="absolute top-0 right-0 p-1 flex flex-col md:flex-row h-screen w-full md:w-11/12 overflow-y-scroll no-scrollbar">
         <Calendar
           events={events}
           onDeleteEvent={handleDeleteEvent}

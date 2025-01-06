@@ -6,11 +6,18 @@ import { useAuth } from '../../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { WebLoader } from '../../home';
 import { User } from '../../../types/user_types';
+import { IconType } from 'react-icons';
 
 interface ActionPaneProps {
     onToggleSideBar: () => void;
     setCurrentMonth: React.Dispatch<React.SetStateAction<dayjs.Dayjs>>;
     setCalendarView: React.Dispatch<React.SetStateAction<'month' | 'week' | 'day'>>;
+}
+
+interface MobileMenuItemProps {
+    icon: IconType;
+    label: string;
+    onClick: () => void;
 }
 
 const ActionPane: React.FC<ActionPaneProps> = ({
@@ -56,7 +63,20 @@ const ActionPane: React.FC<ActionPaneProps> = ({
         setIsMobileMenuOpen(!isMobileMenuOpen);
     }
 
-    const renderActionButtons = () => (
+    const MobileMenuItem: React.FC<MobileMenuItemProps> = ({ icon: Icon, label, onClick }) => (
+        <button
+            onClick={() => {
+                onClick();
+                setIsMobileMenuOpen(false);
+            }}
+            className="flex items-center w-full p-3 hover:bg-white/10 rounded-lg"
+        >
+            <Icon className="text-xl text-white" />
+            <span className="ml-3 text-sm text-white">{label}</span>
+        </button>
+    );
+
+    const renderDesktopButtons = () => (
         <>
             <button
                 onClick={onToggleSideBar}
@@ -149,67 +169,84 @@ const ActionPane: React.FC<ActionPaneProps> = ({
         </>
     );
 
+    const renderMobileMenu = () => (
+        <div className={`
+            fixed bottom-20 right-4 z-40 h-auto
+            bg-gradient-to-b from-blue-800 to-fuchsia-700 
+            rounded-lg shadow-lg p-2 
+            transform transition-all duration-300
+            ${isMobileMenuOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}
+        `}>
+            <div className="w-64 space-y-3 pb-9">
+                <MobileMenuItem icon={BsPlus} label="Add Event" onClick={onToggleSideBar} />
+                <MobileMenuItem icon={BsCalendar2Fill} label="Return to today" onClick={() => setCurrentMonth(dayjs())} />
+                <MobileMenuItem icon={BsEyeFill} label="Change View" onClick={cycleCalendarView} />
+                <MobileMenuItem icon={BsGearFill} label="Settings" onClick={handleOpenSettings} />
+                {isAdmin && (
+                    <MobileMenuItem 
+                        icon={BsFillHouseGearFill} 
+                        label="Go to Admin" 
+                        onClick={() => navigate('/admin')} 
+                    />
+                )}
+                <MobileMenuItem icon={BsBoxArrowLeft} label="Logout" onClick={handleLogout} />
+            </div>
+        </div>
+    );
+
     return (
         <>
-            <button
-                className="md:hidden fixed bottom-0 z-30 m-3 bg-blue-700 
-                    text-white p-2 rounded-full"
-                onClick={toggleMobileMenu}
-            >
-                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-
-            <div
-                className={`bg-gradient-to-b  from-blue-800 to-fuchsia-700 shadow-md py-3 px-4 text-white w-12 hover:w-1/4 h-screen z-20 absolute top-0 left-0
-                    flex flex-col items-center justify-start space-y-10 hover-animation overflow-y-auto no-scrollbar
-                    group md:w-20 md:hover:w-1/4 transform transition-transform duration-300 ease-in-out
-                    ${isMobileMenuOpen
-                        ? 'translate-x-0 md:translate-x-0'
-                        : '-translate-x-full md:translate-x-0'}
-                `}
-            >
-                <div className="w-full flex group-hover:px-10 group-hover:opacity-100 hover-animation">
-                    {user ? <WelcomeUser user={user} /> : <div> Loading User ...</div>}
+             <div className={`
+                fixed top-0 left-0 hidden md:flex bg-gradient-to-b from-blue-800 to-fuchsia-700 
+                shadow-md py-3 px-4 text-white w-20 hover:w-1/4 h-screen 
+                flex-col items-center justify-start space-y-10 overflow-y-scroll no-scrollbar
+                group transition-all duration-300 ease-in-out z-30
+            `}>
+                <div className="w-full flex group-hover:px-10">
+                    {user ? <WelcomeUser user={user} /> : <WebLoader />}
                 </div>
-                {renderActionButtons()}
+                {renderDesktopButtons()}
             </div>
 
-            {isMobileMenuOpen && (
-                <div
-                    className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-20"
+            <div className="md:hidden">
+                <button
                     onClick={toggleMobileMenu}
-                />
-            )}
+                    className="fixed bottom-4 right-4 z-30 
+                             w-14 h-14 bg-blue-600 
+                             rounded-full shadow-lg 
+                             flex items-center justify-center
+                             hover:bg-blue-700 active:scale-95"
+                >
+                    {isMobileMenuOpen ? (
+                        <X className="text-white w-6 h-6" />
+                    ) : (
+                        <Menu className="text-white w-6 h-6" />
+                    )}
+                </button>
+                {renderMobileMenu()}
+                {isMobileMenuOpen && (
+                    <div
+                        className="fixed inset-0 bg-black/50 z-30"
+                        onClick={toggleMobileMenu}
+                    />
+                )}
+            </div>
         </>
     );
 };
 
-interface WelcomeUserProps {
-    user: User;
-}
-
-const WelcomeUser: React.FC<WelcomeUserProps> = React.memo(({ user }) => {
-    console.log('Welcome User props: ', user);
-    if (!user) {
-        return (
-            <div className="flex justify-center items-center">
-                <WebLoader />
-            </div>
-        );
-    }
+const WelcomeUser: React.FC<{ user: User }> = React.memo(({ user }) => {
+    if (!user) return <WebLoader />;
+    
     return (
-        <div className="flex flex-row">
-            <UserCircle className='w-6 h-6 lg:w-10 lg:h-10' />
-            <div className='flex flex-col flex-grow ml-5'>
-                <h1 className="hidden group-hover:block text-md font-garamond font-bold dark:text-white">
-                    Hello, {user.user_name}
-                </h1>
-                <p className="hidden group-hover:block text-xs font-bold text-slate-200">
-                    {user.email}
-                </p>
+        <div className="flex items-center">
+            <UserCircle className="w-6 h-6 lg:w-10 lg:h-10" />
+            <div className="ml-5 hidden group-hover:block">
+                <h1 className="text-md font-bold">{user.user_name}</h1>
+                <p className="text-xs text-slate-200">{user.email}</p>
             </div>
         </div>
-    )
-})
+    );
+});
 
 export default ActionPane;
